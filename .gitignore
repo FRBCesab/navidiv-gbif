@@ -19,6 +19,7 @@
 # User-specific files ----
 README.html
 inst/doc
-data/raw-data
 data/derived-data
+data/raw-data/gbif
+data/raw-data/study_area
 
