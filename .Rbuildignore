@@ -1,0 +1,8 @@
+^LICENSE\.md$
+^analysis$
+^data$
+^outputs$
+^figures$
+^navidiv-gbif\.Rproj$
+^\.Rproj\.user$
+^make\.R$

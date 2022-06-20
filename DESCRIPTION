@@ -1,0 +1,31 @@
+Package: navidiv.gbif
+Type: Package
+Title: Get GBIF Data for All European Fish Species
+Version: 0.0.0.9000
+Authors@R: c(
+    person(given   = "Nicolas",
+           family  = "Casajus",
+           role    = c("aut", "cre", "cph"),
+           email   = "nicolas.casajus@fondationbiodiversite.fr",
+           comment = c(ORCID = "0000-0002-5537-5294")))
+Description: Downloads and cleans GBIF data for all European fish species 
+    between 1992 and 2021.
+URL: https://github.com/frbcesab/navidiv-gbif
+BugReports: https://github.com/frbcesab/navidiv-gbif/issues
+License: GPL (>= 2)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.0
+Imports: 
+    ggplot2,
+    here,
+    pkgload,
+    readr,
+    remotes,
+    rgbif,
+    rnaturalearth,
+    rnaturalearthdata,
+    rnaturalearthhires,
+    sf
+Remotes: 
+    ropensci/rnaturalearthhires
