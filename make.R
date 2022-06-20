@@ -30,3 +30,4 @@ taxon_name <- "Actinopterygii"
 source(here::here("analyses", "create_study_area_extent.R"))
 source(here::here("analyses", "get_gbif_data.R"))
 source(here::here("analyses", "clean_gbif_data.R"))
+source(here::here("analyses", "extract_gbif_data.R"))

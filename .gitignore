@@ -19,7 +19,8 @@
 # User-specific files ----
 README.html
 inst/doc
-data/derived-data
+
+# Ignore large files ----
+data/derived-data/gbif_fish_data_filt*
 data/raw-data/gbif
-data/raw-data/study_area
 
