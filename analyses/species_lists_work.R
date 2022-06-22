@@ -4,20 +4,18 @@
 # European Wide freshwater species list obtained
 # Now trying to match it with our GBIF dataset to trim off any marine or others
 
-# Packages----
-library(tidyverse)
 
 # Files
-paneuro <- read.csv("../navidiv-gbif/data/derived-data/PanEuro_spec_list.csv")
+paneuro <- read.csv(here::here("data", "derived-data", "PanEuro_spec_list.csv"))
 head(paneuro)
 
-gbiflist <- read.csv("../navidiv-gbif/data/derived-data/gbif_fish_species_list.csv")
+gbiflist <- read.csv(here::here("data", "derived-data", "gbif_fish_species_list.csv"))
 head(gbiflist)
 
-iucn <- read.csv("../navidiv-gbif/data/derived-data/iucn_sp_list_trim.csv")
+iucn <- read.csv(here::here("data", "derived-data", "iucn_sp_list_trim.csv"))
 head(iucn)
 
-frewtr <- read.csv("../navidiv-gbif/data/derived-data/Freshwaterecology_specieslist.csv")
+frewtr <- read.csv(here::here("data", "derived-data", "Freshwaterecology_specieslist.csv"))
 head(frewtr)
 
 
@@ -144,7 +142,7 @@ head(known)
 # Googled every single species on this list and determined if they were freshwater
 # or marine and where they originated from.
 
-determined <- read.csv("../navidiv-gbif/data/derived-data/unknown_splist.csv")
+determined <- read.csv(here::here("data", "derived-data", "unknown_splist.csv"))
 View(determined)
 
 determined %>% 
