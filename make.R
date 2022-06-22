@@ -31,4 +31,5 @@ taxon_name <- "Actinopterygii"
 # source(here::here("analyses", "get_gbif_data.R"))
 # source(here::here("analyses", "clean_gbif_data.R"))
 # source(here::here("analyses", "extract_gbif_data.R"))
-source(here::here("analyses", "species_lists_work.R"))
+# source(here::here("analyses", "species_lists_work.R"))
+source(here::here("analyses", "filter_selected_species.R"))
