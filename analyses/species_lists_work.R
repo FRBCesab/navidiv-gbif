@@ -18,6 +18,10 @@ head(iucn)
 frewtr <- read.csv(here::here("data", "derived-data", "Freshwaterecology_specieslist.csv"))
 head(frewtr)
 
+gbifsp <- read.csv(here::here("data", "derived-data", "gbif_fish_species_list_KEEP.csv"))
+head(gbifsp)
+
+
 
 
 
@@ -175,4 +179,44 @@ known2 <- dplyr::select(known2, species)
 
 
 
+
+
+#     5. Determining species status (Native vs. Exotic) ----
+
+head(gbifsp)
+
+head(paneuro)
+
+# Clean both
+gbifsp <- dplyr::select(gbifsp, species)
+paneuro <- dplyr::select(paneuro, full, Status)
+
+
+# Join them
+joined4 <- dplyr::left_join(gbifsp, paneuro, by = c("species" = "full"))
+head(joined4)
+joined4 %>% 
+  count(Status)
+
+# This now gives us 
+#  E  15
+#  N  52
+#  U  52
+#  NA 69
+
+# So still need to determine the status of 121 species
+View(joined4)
+
+# Pulling out just those species
+nat_status_unknown <- dplyr::filter(joined4, Status == "U")
+View(nat_status_unknown)
+
+nas <- joined4[is.na(joined4$Status), ]
+
+nat_status_unknown <- dplyr::full_join(nat_status_unknown, nas, 
+                                       by = c("species" = "species"))
+
+nat_status_unknown <- dplyr::select(nat_status_unknown, species)
+
+# write.csv(nat_status_unknown, "../GBIF_sp_needstatus.csv")
 
