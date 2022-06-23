@@ -29,5 +29,6 @@ Imports:
     rnaturalearthdata,
     rnaturalearthhires,
     sf
+    stringr
 Remotes: 
     ropensci/rnaturalearthhires

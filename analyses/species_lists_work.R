@@ -21,8 +21,8 @@ head(frewtr)
 gbifsp <- read.csv(here::here("data", "derived-data", "gbif_fish_species_list_KEEP.csv"))
 head(gbifsp)
 
-
-
+EUC_st <- read.csv(here::here("data", "derived-data", "gbif_inv_status_EuC.csv"))
+head(EUC_st)
 
 
 
@@ -217,6 +217,65 @@ nat_status_unknown <- dplyr::full_join(nat_status_unknown, nas,
                                        by = c("species" = "species"))
 
 nat_status_unknown <- dplyr::select(nat_status_unknown, species)
-
+head(nat_status_unknown)
 # write.csv(nat_status_unknown, "../GBIF_sp_needstatus.csv")
+
+
+# Because of weird spelling differences, I had to connect the status_known file
+# (just created above) with a file on the list of invasive fish species as 
+# determined by the European Commission (https://rm.coe.int/090000168074694c)
+
+# This identified 8 more species as Exotic
+
+# Lets update that species status table
+gbif_species_status <- joined4
+head(gbif_species_status)
+
+gbif_species_status %>% 
+  count(Status)
+
+
+head(EUC_st)
+# Trim down so just have species we determined as Exotic
+EUC_st <- dplyr::filter(EUC_st, eucstat == "E")
+
+# Join them
+gbif_species_status <- dplyr::left_join(gbif_species_status, EUC_st, 
+                                        by = c("species" = "gbif.species"))
+
+gbif_species_status %>% 
+  count(Status)
+
+# Combine the two status columns
+gbif_species_status$stats2 <- paste(gbif_species_status$Status, 
+                                    gbif_species_status$eucstat)
+
+gbif_species_status %>% 
+  count(stats2)
+
+# Now lets clean that column up
+gbif_species_status$stats2 = str_replace(gbif_species_status$stats2, " ", "")
+gbif_species_status$stats2 = str_replace(gbif_species_status$stats2, "NAE", "E")
+gbif_species_status$stats2 = str_replace(gbif_species_status$stats2, "ENA", "E")
+gbif_species_status$stats2 = str_replace(gbif_species_status$stats2, "NANA", "U")
+gbif_species_status$stats2 = str_replace(gbif_species_status$stats2, "NNA", "N")
+gbif_species_status$stats2 = str_replace(gbif_species_status$stats2, "UE", "E")
+gbif_species_status$stats2 = str_replace(gbif_species_status$stats2, "UNA", "U")
+head(gbif_species_status)
+
+# And now count our categories again
+gbif_species_status %>% 
+  count(stats2)
+#   stats2   n
+#      E    23
+#      N    52
+#      U   113
+
+nat_status_unknown <- dplyr::filter(gbif_species_status, stats2 == "U")
+
+write.csv(nat_status_unknown, "../navidiv-gbif/data/derived-data/GBIF_sp_needstatus.csv")
+
+
+
+
 
