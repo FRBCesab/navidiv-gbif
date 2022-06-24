@@ -273,9 +273,79 @@ gbif_species_status %>%
 
 nat_status_unknown <- dplyr::filter(gbif_species_status, stats2 == "U")
 
-write.csv(nat_status_unknown, "../navidiv-gbif/data/derived-data/GBIF_sp_needstatus.csv")
+# write.csv(nat_status_unknown, "../navidiv-gbif/data/derived-data/GBIF_sp_needstatus.csv")
+
+# Now going to just google every species and identify them as native or exotic
+# My guess is that vast majority will be native.
 
 
 
+## Okay now googled all species in this needstatus file and determined them as 
+## Native, Exotic, or still unknown
 
+updatedstatus <- read.csv("../navidiv-gbif/data/derived-data/GBIF_sp_needstatus.csv")
+head(updatedstatus)
+
+updatedstatus %>% 
+  count(googling)
+#        U 16
+#        E 23
+#   MARINE  6
+#        N 68
+
+# Lets dop the Marine species
+
+updatedstatus <- dplyr::filter(updatedstatus, googling != "MARINE")
+
+# Rename blank cells to U for unknown
+updatedstatus <- dplyr::select(updatedstatus, species, googling)
+str(updatedstatus)
+data1$c <- gsub('_', '-', data1$c)
+updatedstatus$googling2 <- gsub('', 'U', updatedstatus$googling)
+head(updatedstatus)
+updatedstatus$googling2 = str_replace(updatedstatus$googling2, "UEU", "E")
+updatedstatus$googling2 = str_replace(updatedstatus$googling2, "UNU", "N")
+updatedstatus <- dplyr::select(updatedstatus, species, googling2)
+
+# Join with masterfile from above
+head(gbif_species_status)
+View(gbif_species_status)
+updatedstatus %>% 
+  count(googling2)
+
+gbif_species_status2 <- dplyr::left_join(gbif_species_status, updatedstatus,
+                                         by = c("species" = "species"))
+head(gbif_species_status2)
+View(gbif_species_status2)
+
+# Combine the two status columns
+gbif_species_status$stats2 <- paste(gbif_species_status$Status, 
+                                    gbif_species_status$eucstat)
+
+gbif_species_status2$status3 <- paste(gbif_species_status2$stats2,
+                                      gbif_species_status2$googling2)
+head(gbif_species_status2)
+gbif_species_status2 %>% 
+  count(status3)
+
+gbif_species_status2$status3 = str_replace(gbif_species_status2$status3, "E NA", "E")
+gbif_species_status2$status3 = str_replace(gbif_species_status2$status3, "N NA", "N")
+gbif_species_status2$status3 = str_replace(gbif_species_status2$status3, "U E", "E")
+gbif_species_status2$status3 = str_replace(gbif_species_status2$status3, "U N", "N")
+gbif_species_status2$status3 = str_replace(gbif_species_status2$status3, "U NA", "MARINE")
+gbif_species_status2$status3 = str_replace(gbif_species_status2$status3, "U U", "U")
+gbif_species_status2 %>% 
+  count(status3)
+
+gbif_species_status2 <- dplyr::filter(gbif_species_status2, status3 != "NA")
+
+head(gbif_species_status2)
+gbif_species_status2 <- dplyr::select(gbif_species_status2, species, status3)
+
+gbif_species_status2 <- dplyr::rename(gbif_species_status2, status = status3)
+
+# Voila!
+# write.csv(gbif_species_status2, "../navidiv-gbif/data/derived-data/GBIF_SPECIES_STATUS.csv")
+
+# I'll clean this code up a bit after the weekend. - just arrived in Paris.
 
