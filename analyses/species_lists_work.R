@@ -293,7 +293,7 @@ updatedstatus %>%
 #   MARINE  6
 #        N 68
 
-# Lets dop the Marine species
+# Lets drop the Marine species
 
 updatedstatus <- dplyr::filter(updatedstatus, googling != "MARINE")
 
@@ -325,27 +325,31 @@ gbif_species_status$stats2 <- paste(gbif_species_status$Status,
 gbif_species_status2$status3 <- paste(gbif_species_status2$stats2,
                                       gbif_species_status2$googling2)
 head(gbif_species_status2)
+
 gbif_species_status2 %>% 
   count(status3)
 
+# Now clean the column up
 gbif_species_status2$status3 = str_replace(gbif_species_status2$status3, "E NA", "E")
 gbif_species_status2$status3 = str_replace(gbif_species_status2$status3, "N NA", "N")
 gbif_species_status2$status3 = str_replace(gbif_species_status2$status3, "U E", "E")
 gbif_species_status2$status3 = str_replace(gbif_species_status2$status3, "U N", "N")
 gbif_species_status2$status3 = str_replace(gbif_species_status2$status3, "U NA", "MARINE")
 gbif_species_status2$status3 = str_replace(gbif_species_status2$status3, "U U", "U")
+
 gbif_species_status2 %>% 
   count(status3)
 
+# Drop NAs
 gbif_species_status2 <- dplyr::filter(gbif_species_status2, status3 != "NA")
 
-head(gbif_species_status2)
+# Drop unnecessary columns
 gbif_species_status2 <- dplyr::select(gbif_species_status2, species, status3)
 
+# Rename for conciseness 
 gbif_species_status2 <- dplyr::rename(gbif_species_status2, status = status3)
 
 # Voila!
 # write.csv(gbif_species_status2, "../navidiv-gbif/data/derived-data/GBIF_SPECIES_STATUS.csv")
 
-# I'll clean this code up a bit after the weekend. - just arrived in Paris.
 
