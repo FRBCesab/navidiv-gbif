@@ -20,7 +20,7 @@ head(frewtr)
 
 gbifsp <- read.csv(here::here("data", "derived-data", "gbif_fish_species_list_KEEP.csv"))
 head(gbifsp)
-
+fghj
 EUC_st <- read.csv(here::here("data", "derived-data", "gbif_inv_status_EuC.csv"))
 head(EUC_st)
 
