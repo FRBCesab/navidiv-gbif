@@ -283,7 +283,7 @@ nat_status_unknown <- dplyr::filter(gbif_species_status, stats2 == "U")
 ## Okay now googled all species in this needstatus file and determined them as 
 ## Native, Exotic, or still unknown
 
-updatedstatus <- read.csv("../navidiv-gbif/data/derived-data/GBIF_sp_needstatus.csv")
+updatedstatus <- read.csv(here::here("data", "derived-data", "GBIF_sp_needstatus.csv"))
 head(updatedstatus)
 
 updatedstatus %>% 
