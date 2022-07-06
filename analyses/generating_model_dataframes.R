@@ -124,6 +124,8 @@ grid_counts <- dplyr::mutate(grid_counts, prop_mix_obs= mix_obs / obs)
 grid_counts <- dplyr::mutate(grid_counts, prop_mix_inv_sr = prop_mix_sr + prop_inv_sr)
 grid_counts <- dplyr::mutate(grid_counts, prop_mix_inv_obs = prop_mix_obs + prop_inv_obs)
 hist(grid_counts$prop_mix_inv_obs)
+hist(grid_counts$obs)
+
 
 # Plotting ----
 # Now lets add it to the gpkg of the grids so that we can plot and visualize
@@ -136,7 +138,7 @@ head(grids2)
 mapview::mapview(grids2, zcol = "prop_mix_inv_obs")
 # Look at that!
 
-
+library(ggplot2)
 # ggplot it
 ggplot2::ggplot() +
   ggplot2::geom_sf(data = grids2, mapping = aes(fill = prop_mix_inv_obs)) +
@@ -159,7 +161,94 @@ ggplot2::ggplot() + geom_sf(data = basemap) +
 
 
 
-# Infrastructure Metrics ----
+#
+#
+
+
+
+
+
+# Infrastructure ----
+ports <- read.csv(here::here("data", "derived-data", "port_count_ingrids.csv"))
+locks <- read.csv(here::here("data", "derived-data", "lock_count_ingrids.csv"))
+canals <- st_read(here::here("data", "derived-data", "canals_in_buffers.gpkg"))
+
+str(ports)
+str(locks)
+str(canals)
+
+
+# Clean up the files
+ports <- dplyr::select(ports, BB_PORT_CO, CARGOHACA, id)
+ports <- dplyr::rename(ports, port_id = BB_PORT_CO, port_size = CARGOHACA)
+ports %>% 
+  count(id)
+
+locks <- dplyr::select(locks, -WATERWAY, -fid)
+locks <- dplyr::rename(locks, lock_id = NOM, lock_size = NAVIGATION)
+locks %>% 
+  count(id)
+
+canals <- dplyr::select(canals, id, proportion_canal2, geom)
+canals <- dplyr::rename(canals, proportion_canalized = proportion_canal2)
+hist(canals$proportion_canalized)
+
+
+
+## Match these with the grid df built above
+
+# Canals
+str(canals)
+st_as
+canals_for_joining <- sf::st_drop_geometry(canals)
+grids3 <- left_join(grids2, canals_for_joining, by = c("id" = "id"))
+plot(grids3$prop_inv_obs ~ grids3$proportion_canalized)
+
+grids3$proportion_canalized[is.na(grids3$proportion_canalized)] <- 0
+
+# Plot out canal density real quick
+ggplot2::ggplot() + geom_sf(data = basemap) +
+  ggplot2::geom_sf(data = grids3, mapping = aes(fill = proportion_canalized)) +
+  scale_fill_distiller(palette = "Spectral")+
+  coord_sf(xlim = c(-4, 35), ylim = c(43, 56))
+
+
+# Ports
+portcount <- ports %>% 
+  count(id)
+portcount <- dplyr::rename(portcount, ports = n)
+grids3 <- dplyr::left_join(grids3, portcount, by = c("id" = "id"))
+grids3$ports[is.na(grids3$ports)] <- 0
+hist(grids3$ports)
+hist(sqrt(grids3$ports))
+plot(grids3$prop_mix_inv_obs ~ grids3$ports)
+ggplot2::ggplot() + geom_sf(data = basemap) +
+  ggplot2::geom_sf(data = grids3, mapping = aes(fill = ports)) +
+  scale_fill_distiller(palette = "Spectral")+
+  coord_sf(xlim = c(-4, 35), ylim = c(43, 56))
+
+
+# Locks
+lockcount <- locks %>% 
+  count(id)
+lockcount <- dplyr::rename(lockcount, locks = n)
+grids3 <- dplyr::left_join(grids3, lockcount, by = c("id" = "id"))
+grids3$locks[is.na(grids3$locks)] <- 0
+hist(grids3$locks)
+hist(sqrt(grids3$locks))
+plot(grids3$prop_mix_inv_obs ~ sqrt(grids3$locks))
+
+
+# lol quick and dirty models
+summary(lm(grids3$prop_mix_inv_obs ~ grids3$ports))
+try1 <- glm(prop_mix_inv_obs ~ ports + locks + proportion_canalized +
+              ports:locks, data = grids3)
+summary(try1)
+
+
+
+
+
 
 
 
